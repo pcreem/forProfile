@@ -1,3 +1,5 @@
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = 'de317f1c8cd5c62'
 const bcrypt = require('bcrypt-nodejs')
 const db = require('../models')
 const User = db.User
@@ -59,7 +61,10 @@ const userController = {
   },
 
   putProfile: (req, res) => {
-    console.log(req.body)
+    if (!req.body.name) {
+      req.flash('error_messages', "name didn't exist")
+      return res.redirect('back')
+    }
     const { file } = req
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID)
@@ -67,8 +72,8 @@ const userController = {
         return User.findByPk(req.params.id)
           .then((user) => {
             user.update({
-              name: req.body.value,
-              email: req.body.value,
+              name: req.body.name,
+              email: req.body.email,
               image: file ? img.data.link : user.image,
             }).then((user) => {
               req.flash('success_messages', 'user was successfully to update')
@@ -80,8 +85,8 @@ const userController = {
       return User.findByPk(req.params.id)
         .then((user) => {
           user.update({
-            name: req.body.value,
-            email: req.body.value,
+            name: req.body.name,
+            email: req.body.email,
             image: user.image,
           }).then((user) => {
             req.flash('success_messages', 'user was successfully to update')

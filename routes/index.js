@@ -29,7 +29,7 @@ module.exports = (app, passport) => {
 
   app.get('/profile/:id', authenticated, userController.getProfile)
   app.get('/profile/:id/edit', authenticated, userController.editProfile)
-  app.put('/profile/:id', authenticated, userController.putProfile)
+  app.put('/profile/:id', authenticated, upload.single('image'), userController.putProfile)
 
   app.post('/comments', authenticated, commentController.postComment)
   app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)

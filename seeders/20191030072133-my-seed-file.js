@@ -11,7 +11,7 @@ module.exports = {
       password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
       isAdmin: true,
       name: 'root',
-      image: `https://loremflickr.com/320/240`,
+      image: faker.image.imageUrl(),
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
