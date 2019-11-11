@@ -17,12 +17,22 @@
         </button>
       </ul>
     </div>
-  </div>
-  <hr>
-</div>
 
+
+  </div>
+
+  <hr />
+
+</div>
 <hr>
 
+<p>Commented Restaurants</p>
+{{#each profile.Comments}}
+​<picture>
+  <a href="/restaurants/{{this.Restaurant.id}}">
+    <img class="rounded img-thumbnail" src="{{this.Restaurant.image}}" width="50px" height="30px"></a>
+</picture>
+{{/each}}
 <br />
 <br />
 <a href="javascript:history.back()">回上一頁</a>

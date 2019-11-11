@@ -53,12 +53,17 @@ const userController = {
   },
 
   getProfile: (req, res) => {
+    res.locals.user = req.user
     return User.findByPk(req.params.id, {
       include: [
         { model: Comment, include: [Restaurant] }
       ]
     }).then(profile => {
-      console.log(profile.Restaurant)
+      //console.log(profile.Comments.Restaurant)
+      return res.render('profile', {
+        user: res.locals.user,
+        profile: profile
+      })
     })
   },
 
