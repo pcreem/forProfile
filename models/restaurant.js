@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     opening_hours: DataTypes.STRING,
     description: DataTypes.TEXT,
+    viewCounts: DataTypes.INTEGER,
     image: DataTypes.STRING
   }, {})
   Restaurant.associate = function (models) {

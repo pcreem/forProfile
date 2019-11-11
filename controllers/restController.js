@@ -77,13 +77,17 @@ const restController = {
 
   getViews: (req, res) => {
     return Restaurant.findByPk(req.params.id, {
+
       include: [
         Category,
         { model: Comment, include: [User] }
       ]
     }).then(restaurant => {
-      return res.render('restviews', {
-        restaurant: restaurant
+      restaurant.increment('viewCounts', { by: 1 })
+      restaurant.save().then(() => {
+        return res.render('restviews', {
+          restaurant: restaurant
+        })
       })
     })
 
