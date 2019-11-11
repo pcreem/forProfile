@@ -15,7 +15,11 @@
   </div>
   <div class="col-md-8">
     <p>{{restaurant.description}}</p>
+    <form action="/restviews/{{restaurant.id}}" method="GET">
+      <button type="submit" class="btn btn-primary">Dashboard</button>
+    </form>
   </div>
+
   <hr>
 </div>
 <br /><br />
