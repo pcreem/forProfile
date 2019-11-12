@@ -3,7 +3,7 @@ const db = require('../models')
 const User = db.User
 const Restaurant = db.Restaurant
 const Comment = db.Comment
-const Favorite = db.Favorite
+const Favorite = db.Favorite // 開頭引入 Favorite
 const Like = db.Like
 
 const imgur = require('imgur-node-api')
@@ -120,7 +120,6 @@ const userController = {
           })
       })
   },
-
   addLike: (req, res) => {
     return Like.create({
       UserId: req.user.id,
@@ -138,8 +137,8 @@ const userController = {
         RestaurantId: req.params.restaurantId
       }
     })
-      .then((favorite) => {
-        favorite.destroy()
+      .then((Like) => {
+        Like.destroy()
           .then((restaurant) => {
             return res.redirect('back')
           })
