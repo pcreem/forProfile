@@ -1,11 +1,12 @@
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = 'de317f1c8cd5c62'
 const bcrypt = require('bcrypt-nodejs')
 const db = require('../models')
-const Restaurant = db.Restaurant
-const Category = db.Category
-const Comment = db.Comment
 const User = db.User
+const Restaurant = db.Restaurant
+const Comment = db.Comment
+const Favorite = db.Favorite // 開頭引入 Favorite
+
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const userController = {
   signUpPage: (req, res) => {
@@ -51,32 +52,23 @@ const userController = {
     req.logout()
     res.redirect('/signin')
   },
-
-  getProfile: (req, res) => {
-    res.locals.user = req.user
+  getUser: (req, res) => {
     return User.findByPk(req.params.id, {
       include: [
-        { model: Comment, include: [Restaurant] }
+        { model: Comment, include: Restaurant }
       ]
-    }).then(profile => {
-      //console.log(profile.Comments.Restaurant)
-      return res.render('profile', {
-        user: res.locals.user,
-        profile: profile
-      })
+    }).then(user => {
+      return res.render('users/profile', { profile: user })
     })
   },
-
-  editProfile: (req, res) => {
+  editUser: (req, res) => {
     return User.findByPk(req.params.id).then(user => {
-      return res.render('create', { user: user })
+      return res.render('users/edit', { user: user })
     })
   },
-
-  putProfile: (req, res) => {
-    if (!req.body.name) {
-      req.flash('error_messages', "name didn't exist")
-      return res.redirect('back')
+  putUser: (req, res) => {
+    if (Number(req.params.id) !== Number(req.user.id)) {
+      return res.redirect(`/users/${req.params.id}`)
     }
     const { file } = req
     if (file) {
@@ -86,11 +78,9 @@ const userController = {
           .then((user) => {
             user.update({
               name: req.body.name,
-              email: req.body.email,
-              image: file ? img.data.link : user.image,
+              image: img.data.link
             }).then((user) => {
-              req.flash('success_messages', 'user was successfully to update')
-              res.redirect('/profile/:id')
+              res.redirect(`/users/${req.params.id}`)
             })
           })
       })
@@ -98,17 +88,37 @@ const userController = {
       return User.findByPk(req.params.id)
         .then((user) => {
           user.update({
-            name: req.body.name,
-            email: req.body.email,
-            image: user.image,
+            name: req.body.name
           }).then((user) => {
-            req.flash('success_messages', 'user was successfully to update')
-            res.redirect('/profile/:id')
+            res.redirect(`/users/${req.params.id}`)
           })
         })
     }
   },
+  addFavorite: (req, res) => {
+    return Favorite.create({
+      UserId: req.user.id,
+      RestaurantId: req.params.restaurantId
+    })
+      .then((restaurant) => {
+        return res.redirect('back')
+      })
+  },
 
+  removeFavorite: (req, res) => {
+    return Favorite.findOne({
+      where: {
+        UserId: req.user.id,
+        RestaurantId: req.params.restaurantId
+      }
+    })
+      .then((favorite) => {
+        favorite.destroy()
+          .then((restaurant) => {
+            return res.redirect('back')
+          })
+      })
+  }
 }
 
 module.exports = userController

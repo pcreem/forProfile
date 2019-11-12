@@ -10,6 +10,7 @@ const passport = require('./config/passport')
 const app = express()
 const port = process.env.PORT || 3000
 
+
 // 設定 view engine 使用 handlebars
 app.engine('handlebars', handlebars({
   defaultLayout: 'main',
@@ -32,8 +33,6 @@ app.use((req, res, next) => {
   res.locals.user = req.user
   next()
 })
-
-app.use('/upload', express.static(__dirname + '/upload'))
 
 app.listen(port, () => {
   db.sequelize.sync() // 跟資料庫同步

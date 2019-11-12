@@ -27,15 +27,16 @@ module.exports = (app, passport) => {
   app.get('/restaurants', authenticated, restController.getRestaurants)
   app.get('/restaurants/feeds', authenticated, restController.getFeeds)
   app.get('/restaurants/:id', authenticated, restController.getRestaurant)
-
-  app.get('/profile/:id', authenticated, userController.getProfile)
-  app.get('/profile/:id/edit', authenticated, userController.editProfile)
-  app.put('/profile/:id', authenticated, upload.single('image'), userController.putProfile)
-
-  app.get('/restviews/:id', authenticated, restController.getViews)
+  app.get('/restaurants/:id/dashboard', authenticated, restController.getDashboard)
 
   app.post('/comments', authenticated, commentController.postComment)
   app.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
+
+  app.get('/users/:id', authenticated, userController.getUser)
+  app.get('/users/:id/edit', authenticated, userController.editUser)
+  app.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
+  app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
+  app.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
 
   // 連到 /admin 頁面就轉到 /admin/restaurants
   app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
@@ -46,6 +47,9 @@ module.exports = (app, passport) => {
   app.get('/admin/restaurants/:id/edit', authenticatedAdmin, adminController.editRestaurant)
   app.put('/admin/restaurants/:id', authenticatedAdmin, upload.single('image'), adminController.putRestaurant)
   app.delete('/admin/restaurants/:id', authenticatedAdmin, adminController.deleteRestaurant)
+
+  app.get('/admin/users', authenticatedAdmin, adminController.getUsers)
+  app.put('/admin/users/:id', authenticatedAdmin, adminController.putUsers)
 
   app.get('/admin/categories', authenticatedAdmin, categoryController.getCategories)
   app.post('/admin/categories', authenticatedAdmin, categoryController.postCategory)
