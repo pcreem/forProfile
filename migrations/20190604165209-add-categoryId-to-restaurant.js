@@ -10,8 +10,8 @@ module.exports = {
         key: 'id'
       }
     })
-  },
+ },
   down: (queryInterface, Sequelize) => {
     return queryInterface.removeColumn('Restaurants', 'CategoryId')
-  }
+ }
 }
