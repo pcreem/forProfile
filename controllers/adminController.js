@@ -6,12 +6,11 @@ const Restaurant = db.Restaurant
 const User = db.User
 const Category = db.Category
 
-const adminService = require('../services/adminService.js')
-
 const adminController = {
   getRestaurants: (req, res) => {
-    adminService.getRestaurants(req, res, (data) => {
-      return res.render('admin/restaurants', data)
+    return Restaurant.findAll({ include: [Category] }).then(restaurants => {
+      console.log(restaurants)
+      return res.render('admin/restaurants', { restaurants: restaurants })
     })
   },
   createRestaurant: (req, res) => {

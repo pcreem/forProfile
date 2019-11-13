@@ -6,9 +6,6 @@
     <a class="nav-link" href="/restaurants/feeds">最新動態</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="/restaurants/top">TOP10 人氣餐廳</a>
-  </li>
-  <li class="nav-item">
     <a class="nav-link" href="/users/top">美食達人</a>
   </li>
 </ul>
@@ -20,7 +17,7 @@
   </li>
   {{#each categories}}
     <li class="nav-item">
-      <a class="nav-link {{#ifCond this.id ../categoryId}}active{{/ifCond}}" href="?categoryId={{this.id}}">{{this.name}}</a>
+      <a class="nav-link {{#ifCond '' categoryId}}active{{/ifCond}}" href="?categoryId={{this.id}}">{{this.name}}</a>
     </li>
   {{/each}}
 </ul>
@@ -40,15 +37,9 @@
           <p class="card-text">{{this.description}}</p>
           {{#if this.isFavorited }}
             <form action="/favorite/{{this.id}}?_method=DELETE" method="POST"><button type="submit"
-                class="btn btn-danger float-left mr-2">移除最愛</button></form>
+                class="btn btn-danger">移除最愛</button></form>
           {{else}}
-            <form action="/favorite/{{this.id}}" method="POST"><button type="submit" class="btn btn-primary float-left mr-2">加到最愛</button></form>
-          {{/if}}
-          {{#if this.isLiked }}
-            <form action="/like/{{this.id}}?_method=DELETE" method="POST"><button type="submit"
-                class="btn btn-danger">Unlike</button></form>
-          {{else}}
-            <form action="/like/{{this.id}}" method="POST"><button type="submit" class="btn btn-primary">Like</button></form>
+            <form action="/favorite/{{this.id}}" method="POST"><button type="submit" class="btn btn-primary">加到最愛</button></form>
           {{/if}}
         </div>
       </div>
