@@ -3,7 +3,8 @@ const db = require('../models')
 const User = db.User
 const Restaurant = db.Restaurant
 const Comment = db.Comment
-const Favorite = db.Favorite // 開頭引入 Favorite
+const Favorite = db.Favorite
+const Like = db.Like
 const Followship = db.Followship
 
 const imgur = require('imgur-node-api')
@@ -56,10 +57,21 @@ const userController = {
   getUser: (req, res) => {
     return User.findByPk(req.params.id, {
       include: [
-        { model: Comment, include: Restaurant }
+        { model: Comment, include: Restaurant },
+        { model: Restaurant, as: 'FavoritedRestaurants' },
+        { model: User, as: 'Followers' },
+        { model: User, as: 'Followings' }
       ]
     }).then(user => {
-      return res.render('users/profile', { profile: user })
+      user.CommentsRestaurants = []
+      user.Comments.map((d) => {
+        if (!user.CommentsRestaurants.map(d => d.id).includes(d.RestaurantId)) {
+          user.CommentsRestaurants.push(d.Restaurant)
+          return d
+        }
+      })
+      const isFollowed = req.user.Followings.map(d => d.id).includes(user.id)
+      return res.render('users/profile', { profile: user, isFollowed: isFollowed })
     })
   },
   editUser: (req, res) => {
@@ -101,13 +113,8 @@ const userController = {
       UserId: req.user.id,
       RestaurantId: req.params.restaurantId
     })
-      .then((favorite) => {
-        return Restaurant.findByPk(favorite.RestaurantId)
-          .then(restaurant => {
-            restaurant.fovCounts += 1
-            restaurant.save()
-            return res.redirect('back')
-          })
+      .then((restaurant) => {
+        return res.redirect('back')
       })
   },
 
@@ -119,16 +126,33 @@ const userController = {
       }
     })
       .then((favorite) => {
-        return Restaurant.findByPk(favorite.RestaurantId)
-          .then(restaurant => {
-            restaurant.fovCounts -= 1
-            restaurant.save()
-            favorite.destroy()
-              .then((restaurant) => {
-                return res.redirect('back')
-              })
+        favorite.destroy()
+          .then((restaurant) => {
+            return res.redirect('back')
           })
       })
+  },
+  addLike: (req, res) => {
+    return Like.create({
+      UserId: req.user.id,
+      RestaurantId: req.params.restaurantId
+    }).then((restaurant) => {
+      return res.redirect('back')
+    })
+  },
+
+  removeLike: (req, res) => {
+    return Like.findOne({
+      where: {
+        UserId: req.user.id,
+        RestaurantId: req.params.restaurantId
+      }
+    }).then((like) => {
+      like.destroy()
+        .then((restaurant) => {
+          return res.redirect('back')
+        })
+    })
   },
   getTopUser: (req, res) => {
     // 撈出所有 User 與 followers 資料
