@@ -24,6 +24,12 @@ const adminController = {
     adminService.deleteRestaurant(req, res, (data) => {
       return res.json(data)
     })
-  }
+  },
+  putRestaurant: (req, res) => {
+    adminService.postRestaurant(req, res, (data) => {
+      return res.json(data)
+    })
+  },
+
 }
 module.exports = adminController
